@@ -12,18 +12,23 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { CatsService } from './cats.service';
+import { Cat } from './entities/cat.entity';
 
 @Controller('cats')
 export class CatsController {
+  constructor(private catsService: CatsService) {}
+
   @Get()
-  findAll(): string {
-    return 'This action returns all cats';
+  async findAll(): Promise<Cat[]> {
+    return this.catsService.findAll();
   }
 
   // request payload (Body)
   @Post()
-  create(@Body() requestBody) {
-    return { requestBody };
+  async create(@Body() requestBody) {
+    this.catsService.create(requestBody);
+    return requestBody;
   }
 
   // changed status code
@@ -31,6 +36,7 @@ export class CatsController {
   @HttpCode(204)
   path(@Req() req: Request): string {
     console.log({ req });
+
     return 'This action request test';
   }
 
@@ -38,7 +44,6 @@ export class CatsController {
   @Get('redirect')
   @Redirect('https://google.com', 301)
   redirect(@Query('version') version) {
-    console.log('warum', version);
     // if the action returns any thing , the redirect decorator is overridden
     if (version == 5) {
       return { url: 'https://docs.nestjs.com/v5/' };
