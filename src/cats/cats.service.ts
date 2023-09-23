@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable, HttpStatus } from '@nestjs/common';
 import { Cat } from './entities/cat.entity';
 import { HelpersService } from 'src/helpers/helpers.service';
 
@@ -18,4 +18,23 @@ export class CatsService {
   findAll(): Cat[] {
     return this.cats;
   }
+
+  exception() {
+    try {
+      throw new Error('An error is occurred');
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          error: 'This is a custom message',
+        },
+        HttpStatus.FORBIDDEN,
+        {
+          cause: error,
+        },
+      );
+    }
+  }
+
+  customException() {}
 }
