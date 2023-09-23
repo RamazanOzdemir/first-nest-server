@@ -10,10 +10,16 @@ import {
   Req,
   Res,
   HttpStatus,
+  ParseIntPipe,
+  UsePipes,
+  DefaultValuePipe,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { CatsService } from './cats.service';
 import { Cat } from './entities/cat.entity';
+import { CreateCatDto, createCatSchema } from './dto/create-cat.dto';
+import { ZodValidationPipe } from 'src/pipes/zod-validation.pipe';
+import { UserByIdPipe } from 'src/pipes/user-by-id.pipe';
 
 @Controller('cats')
 export class CatsController {
@@ -26,7 +32,9 @@ export class CatsController {
 
   // request payload (Body)
   @Post()
-  async create(@Body() requestBody) {
+  //body validation pipe is applied to this controller with the UsePipes decorator
+  @UsePipes(new ZodValidationPipe(createCatSchema))
+  async create(@Body() requestBody: CreateCatDto) {
     this.catsService.create(requestBody);
     return requestBody;
   }
@@ -58,10 +66,32 @@ export class CatsController {
       .send('This action returns by express response');
   }
 
+  //custom response code with nest pipe
+  @Get('pipe/:id')
+  pipe(
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: number,
+  ) {
+    return `Pipe id is ${id}`;
+  }
+
+  @Get('users')
+  // Providing defaults. Returns default value if query parameter does not exist
+  users(@Query('id', new DefaultValuePipe(123), new UserByIdPipe()) user) {
+    return user;
+  }
+  @Get('users/:id')
+  // transform pipe, takes a parameter and returns entity
+  findUserById(@Param('id', new UserByIdPipe()) user) {
+    return user;
+  }
+
   // handling route params
   @Get(':id')
-  findOne(@Param() params: any): string {
-    console.log(params.id);
-    return `This action returns a #${params.id} cat`;
+  findOne(@Param('id', ParseIntPipe) id: number): string {
+    return `This action returns a #${id} cat`;
   }
 }

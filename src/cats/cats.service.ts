@@ -1,6 +1,7 @@
 import { HttpException, Injectable, HttpStatus } from '@nestjs/common';
 import { Cat } from './entities/cat.entity';
 import { HelpersService } from 'src/helpers/helpers.service';
+import { CreateCatDto } from './dto/create-cat.dto';
 
 @Injectable()
 export class CatsService {
@@ -10,9 +11,9 @@ export class CatsService {
   // Because helpers module is global module, it can used every module without imports
   constructor(private helpersService: HelpersService) {}
 
-  create(cat: Cat) {
+  create(cat: CreateCatDto) {
     console.log(this.helpersService.isString(cat.name));
-    this.cats.push(cat);
+    this.cats.push(cat as Cat);
   }
 
   findAll(): Cat[] {
