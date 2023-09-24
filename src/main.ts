@@ -8,7 +8,7 @@ async function bootstrap() {
   // Global Middleware  was applied for all requests to application
   app.use(authMiddleware);
 
-  await app.listen(process.env.PORT);
+  await app.listen(process.env.PORT || 3000);
 }
 
 bootstrap();
