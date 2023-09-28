@@ -6,6 +6,7 @@ export function authMiddleware(
   res: Response,
   next: NextFunction,
 ) {
+  // The Guards is used for authentication that's way this middleware is useless
   console.log('auth middleware is invoked');
   next();
 }
