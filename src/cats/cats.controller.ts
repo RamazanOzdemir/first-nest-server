@@ -13,6 +13,7 @@ import {
   ParseIntPipe,
   UsePipes,
   DefaultValuePipe,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { CatsService } from './cats.service';
@@ -20,7 +21,10 @@ import { Cat } from './entities/cat.entity';
 import { CreateCatDto, createCatSchema } from './dto/create-cat.dto';
 import { ZodValidationPipe } from 'src/pipes/zod-validation.pipe';
 import { UserByIdPipe } from 'src/pipes/user-by-id.pipe';
+import { TimeoutInterceptor } from 'src/interceptors/timeout.interceptor';
+import { LoggingInterceptor } from 'src/interceptors/logging.interceptor';
 
+@UseInterceptors(TimeoutInterceptor, LoggingInterceptor)
 @Controller('cats')
 export class CatsController {
   constructor(private catsService: CatsService) {}
